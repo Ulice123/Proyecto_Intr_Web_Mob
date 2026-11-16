@@ -129,7 +129,7 @@ describe('ValidacionService', () => {
     expect(resultado).toEqual({
       tipo: 'ERROR',
       codigo: 'EP-A1B2C3D4',
-      mensaje: 'No se pudo contactar al servidor',
+      mensaje: 'Error del servidor (HTTP 500)',
     });
   });
 

@@ -52,7 +52,7 @@
         }
         @case ('ERROR') {
           <p class="resultado-titulo">⚠ ERROR DE CONEXIÓN</p>
-          <p class="resultado-mensaje">No se pudo validar. Intente nuevamente.</p>
+          <p class="resultado-mensaje">{{ res.mensaje }}</p>
           <p class="resultado-codigo">{{ res.codigo }}</p>
         }
       }

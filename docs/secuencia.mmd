@@ -1,0 +1,31 @@
+sequenceDiagram
+    actor Operador
+    participant App as App de acceso
+    participant Gateway
+    participant API as API de entradas
+
+    Operador->>App: Escanea o introduce código
+    Note over App: Captura código manual o lector USB/Bluetooth
+    Operador->>App: Presiona Enter o Validar
+    App->>App: Comprueba que no exista una solicitud en curso
+    App->>App: Bloquea botón y evita envíos duplicados
+    App->>Gateway: POST /api/entradas/{codigo}/validar
+    Gateway->>API: Reenvía solicitud de validación
+    API->>API: Busca entrada y comprueba su estado
+
+    alt Entrada válida (HTTP 200)
+        API-->>Gateway: autorizado: true, estado: UTILIZADA
+        Gateway-->>App: Respuesta 200
+        App-->>Operador: ACCESO AUTORIZADO
+    else Entrada ya utilizada (HTTP 409)
+        API-->>Gateway: ENTRADA_UTILIZADA
+        Gateway-->>App: Respuesta 409
+        App-->>Operador: ACCESO RECHAZADO - Entrada ya utilizada
+    else Entrada inexistente (HTTP 404)
+        API-->>Gateway: ENTRADA_NO_EXISTE
+        Gateway-->>App: Respuesta 404
+        App-->>Operador: ACCESO RECHAZADO - Entrada no encontrada
+    end
+
+    App->>App: Desbloquea operación y limpia campo
+    App-->>Operador: Campo listo para siguiente lectura

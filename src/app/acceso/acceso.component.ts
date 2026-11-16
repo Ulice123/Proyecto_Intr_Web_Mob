@@ -32,6 +32,9 @@ function formatearHora(fecha: Date): string {
   templateUrl: './acceso.component.html',
   styleUrl: './acceso.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(window:keydown)': 'onWindowKeydown($event)',
+  },
 })
 export class AccesoComponent {
   private readonly validacionService = inject(ValidacionService);
@@ -47,6 +50,20 @@ export class AccesoComponent {
   protected onCodigoInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.codigo.set(input.value);
+  }
+
+  protected onWindowKeydown(event: KeyboardEvent): void {
+    const el = this.codigoInput()?.nativeElement;
+    if (!el || document.activeElement === el) {
+      return;
+    }
+    const activeTag = document.activeElement?.tagName.toLowerCase();
+    if (activeTag === 'input' || activeTag === 'textarea') {
+      return;
+    }
+    if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      el.focus();
+    }
   }
 
   protected validar(): void {

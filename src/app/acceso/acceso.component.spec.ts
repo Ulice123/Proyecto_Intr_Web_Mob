@@ -131,7 +131,7 @@ describe('AccesoComponent', () => {
     fixture.detectChanges();
 
     expect(getResultZone().textContent).toContain('⚠ ERROR DE CONEXIÓN');
-    expect(getResultZone().textContent).toContain('No se pudo validar. Intente nuevamente.');
+    expect(getResultZone().textContent).toContain('No se pudo contactar al servidor');
     expect(getResultZone().textContent).toContain('EP-ERR');
   });
 
@@ -183,5 +183,12 @@ describe('AccesoComponent', () => {
     expect(items[0].textContent).toContain('EP-006');
     expect(items[4].textContent).toContain('EP-002');
     expect(items[0].querySelector('.historial-hora')?.textContent).toMatch(/^\d{2}:\d{2}:\d{2}$/);
+  });
+
+  it('recovers focus on codigoInput when typing printable keys outside the input', () => {
+    const button = getButton();
+    button.focus();
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'E' }));
+    expect(document.activeElement).toBe(getInput());
   });
 });

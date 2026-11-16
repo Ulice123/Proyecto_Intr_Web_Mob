@@ -72,6 +72,14 @@ export class ValidacionService {
           mensaje: body?.mensaje ?? 'Entrada no encontrada',
         };
       }
+
+      if (err.status > 0) {
+        return {
+          tipo: 'ERROR',
+          codigo,
+          mensaje: body?.mensaje ?? `Error del servidor (HTTP ${err.status})`,
+        };
+      }
     }
 
     return {
