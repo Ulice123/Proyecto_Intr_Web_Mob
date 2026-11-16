@@ -1,0 +1,78 @@
+<main class="acceso-container">
+  <header class="acceso-header">
+    <h1>Control de acceso</h1>
+  </header>
+
+  <form class="acceso-form" (ngSubmit)="validar()">
+    <input
+      #codigoInput
+      type="text"
+      class="codigo-input"
+      [value]="codigo()"
+      (input)="onCodigoInput($event)"
+      [readOnly]="validando()"
+      autofocus
+      autocomplete="off"
+      autocapitalize="characters"
+      spellcheck="false"
+      enterkeyhint="go"
+      aria-label="Código de entrada"
+      placeholder="Escanee o escriba el código"
+    />
+    <button
+      type="submit"
+      class="validar-btn"
+      [disabled]="validando() || !codigoNormalizado()"
+    >
+      {{ validando() ? 'Validando…' : 'Validar' }}
+    </button>
+  </form>
+
+  <section
+    class="resultado-zona"
+    [class.estado-autorizado]="!validando() && resultado()?.tipo === 'AUTORIZADO'"
+    [class.estado-rechazado]="!validando() && resultado()?.tipo === 'RECHAZADO'"
+    [class.estado-error]="!validando() && resultado()?.tipo === 'ERROR'"
+    [class.estado-validando]="validando()"
+    [class.estado-inicial]="!validando() && !resultado()"
+    aria-live="assertive"
+  >
+    @if (validando()) {
+      <p class="resultado-titulo">Validando {{ codigoEnCurso() }}…</p>
+    } @else if (resultado(); as res) {
+      @switch (res.tipo) {
+        @case ('AUTORIZADO') {
+          <p class="resultado-titulo">✔ ACCESO AUTORIZADO</p>
+          <p class="resultado-codigo">{{ res.codigo }}</p>
+        }
+        @case ('RECHAZADO') {
+          <p class="resultado-titulo">✖ ACCESO RECHAZADO</p>
+          <p class="resultado-mensaje">{{ res.mensaje }}</p>
+          <p class="resultado-codigo">{{ res.codigo }}</p>
+        }
+        @case ('ERROR') {
+          <p class="resultado-titulo">⚠ ERROR DE CONEXIÓN</p>
+          <p class="resultado-mensaje">No se pudo validar. Intente nuevamente.</p>
+          <p class="resultado-codigo">{{ res.codigo }}</p>
+        }
+      }
+    } @else {
+      <p class="resultado-titulo">Esperando lectura…</p>
+    }
+  </section>
+
+  @if (historial().length > 0) {
+    <section class="historial" aria-label="Últimas lecturas">
+      <h2 class="historial-titulo">Últimas lecturas</h2>
+      <ul class="historial-lista">
+        @for (item of historial(); track $index) {
+          <li class="historial-item" [attr.data-tipo]="item.tipo">
+            <span class="historial-hora">{{ item.hora }}</span>
+            <span class="historial-codigo">{{ item.codigo }}</span>
+            <span class="historial-tipo">{{ item.tipo }}</span>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+</main>

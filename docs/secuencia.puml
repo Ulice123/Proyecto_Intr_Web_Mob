@@ -1,0 +1,26 @@
+@startuml
+title EventPass - Lectura y validación de entrada
+actor Operador
+participant "App de acceso" as App
+participant Gateway
+participant "API de entradas" as API
+
+Operador -> App : Escanea/escribe código + Enter
+App -> App : Normaliza código, bloquea reenvío
+App -> Gateway : POST /api/entradas/{codigo}/validar
+Gateway -> API : POST /api/entradas/{codigo}/validar
+alt Entrada válida
+  API --> Gateway : 200 {codigo, autorizado:true, estado:"UTILIZADA"}
+  Gateway --> App : 200
+  App --> Operador : ACCESO AUTORIZADO
+else Entrada ya utilizada
+  API --> Gateway : 409 {error:"ENTRADA_UTILIZADA"}
+  Gateway --> App : 409
+  App --> Operador : ACCESO RECHAZADO - Entrada ya utilizada
+else Entrada inexistente
+  API --> Gateway : 404 {error:"ENTRADA_NO_EXISTE"}
+  Gateway --> App : 404
+  App --> Operador : ACCESO RECHAZADO - Entrada no encontrada
+end
+App -> App : Limpia campo y devuelve foco
+@enduml
